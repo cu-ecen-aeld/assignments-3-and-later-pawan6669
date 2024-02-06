@@ -6,7 +6,7 @@ else
 endif
 
 all:
-	${cc} finder-app/writer.c -o finder-app/writer
+	${cc} -static finder-app/writer.c -o finder-app/writer
 
 
 clean:
