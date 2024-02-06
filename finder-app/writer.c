@@ -22,6 +22,7 @@ int  main(int argc, char *argv[])  {
 		if (fd==NULL) {
 			//printf("Unable to open the file. Please check if the directory exists!! \n");
 			syslog(LOG_PERROR, "Unable to open the file. Please check the directory");
+			exit(1);
 		} else {
 			//printf("File opened successfully. Writing to it!!! \n");
 			//printf("Size of the string: %d \n", sizeof(argv[2]));
