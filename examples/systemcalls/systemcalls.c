@@ -16,8 +16,15 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
+    int rid;
+    if ( (rid = system(cmd)) == 0 ) {
+	    printf(" In %s function succesfully executed with rid: %d \n",__func__, rid);
+    	return true;
 
-    return true;
+    }
+
+    printf(" In %s function is not succesfully executed. Returned with %d\n",__func__, rid);
+    return false;
 }
 
 /**
@@ -49,6 +56,8 @@ bool do_exec(int count, ...)
     // and may be removed
     command[count] = command[count];
 
+    va_end(args);
+  
 /*
  * TODO:
  *   Execute a system command by calling fork, execv(),
@@ -58,10 +67,41 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
+    int kid;
+    switch(kid = fork()) 
+    {
+		case -1: perror("fork");abort();
+		case 0:
+            		printf("This is child process with PID:"" %d \n",getpid());
+            		if (execv(command[0], &command[1]) == 0 ) {
+                		printf("child process Execv is success.  This should never be printed \n"); exit(0);
+            		} else {
+                		printf("Child process: execv failed \n"); //exit(-1);
+				abort();
+            		}
 
-    va_end(args);
-
-    return true;
+		default:
+			printf("I am the parent process.  Child ID of the process is %d \n",kid);
+            		int wstatus;
+            		waitpid(kid, &wstatus, 0); // Store proc info into wstatus
+			/*
+            		int return_value = WEXITSTATUS(wstatus);
+            		printf("The return from child process %d is %d \n", kid, return_value);
+            		if (return_value == 0) {
+                		return true;
+            		} else {
+                		return false;
+            		}
+			*/
+			if(WIFEXITED(wstatus) ) {
+				printf("The child process %d exited normally \n",kid);
+				return true;
+			} else {
+				printf("The child process %d did not exit normally \n",kid);
+				return false;
+			}
+	}
+    
 }
 
 /**
@@ -92,8 +132,35 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *   The rest of the behaviour is same as do_exec()
  *
 */
-
     va_end(args);
+
+    int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0666);
+    if (fd < 0) { perror("open"); abort(); }
+    int kid;
+    switch(kid = fork()) {
+		case -1: perror("fork");printf("Fork failed. Aborting!!! \n");abort();
+		case 0:
+            		if (dup2(fd, 1) < 0) {
+                		perror("dup2"); abort();
+            		}
+            		close(fd);
+            		printf("This is child process with PID: %d",getpid());
+            		execvp(command[0], &command[1]); 
+            		perror("child process execv had issue execv"); abort();
+
+		default:
+			printf("I am the parent process.  Child ID of the process is %d \n",kid);
+            		int wstatus;
+            		waitpid(kid, &wstatus, 0); // Store proc info into wstatus
+			if(WIFEXITED(wstatus) ) {
+				printf("The child process %d exited normally \n",kid);
+				return true;
+			} else {
+				printf("The child process %d did not exit normally \n",kid);
+				return false;
+			}
+
+    }
 
     return true;
 }
