@@ -73,7 +73,7 @@ bool do_exec(int count, ...)
 		case -1: perror("fork");abort();
 		case 0:
             		printf("This is child process with PID:"" %d \n",getpid());
-            		if (execv(command[0], &command[1]) == 0 ) {
+            		if (execv(command[0], command) == 0 ) {
                 		printf("child process Execv is success.  This should never be printed \n"); exit(0);
             		} else {
                 		printf("Child process: execv failed \n"); //exit(-1);
@@ -95,11 +95,15 @@ bool do_exec(int count, ...)
 			*/
 			if(WIFEXITED(wstatus) ) {
 				printf("The child process %d exited normally \n",kid);
-				return true;
+				if (WEXITSTATUS(wstatus)!=0) {
+					printf("child process existed but it did not run \n");
+					return false;
+				}
 			} else {
 				printf("The child process %d did not exit normally \n",kid);
 				return false;
 			}
+			return true;
 	}
     
 }
@@ -145,7 +149,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
             		}
             		close(fd);
             		printf("This is child process with PID: %d",getpid());
-            		execvp(command[0], &command[1]); 
+            		execvp(command[0], command); 
             		perror("child process execv had issue execv"); abort();
 
 		default:
@@ -154,11 +158,15 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
             		waitpid(kid, &wstatus, 0); // Store proc info into wstatus
 			if(WIFEXITED(wstatus) ) {
 				printf("The child process %d exited normally \n",kid);
-				return true;
+				if (WEXITSTATUS(wstatus)!=0) {
+					printf("child process existed but it did not run \n");
+					return false;
+				}
 			} else {
 				printf("The child process %d did not exit normally \n",kid);
 				return false;
 			}
+
 
     }
 
