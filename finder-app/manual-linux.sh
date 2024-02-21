@@ -36,28 +36,28 @@ if [ ! -d "${OUTDIR}/linux-stable" ]; then
 	echo "CLONING GIT LINUX STABLE VERSION ${KERNEL_VERSION} IN ${OUTDIR}"
 	git clone ${KERNEL_REPO} --depth 1 --single-branch --branch ${KERNEL_VERSION}
 fi
-# if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
-#     cd linux-stable
-#     echo "Checking out version ${KERNEL_VERSION}"
-#     git checkout ${KERNEL_VERSION}
+if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
+    cd linux-stable
+    echo "Checking out version ${KERNEL_VERSION}"
+    git checkout ${KERNEL_VERSION}
 	
-#     echo "Checked out the kernel. Cleaning it"
-#     # TODO: Add your kernel build steps here
-#     make -j4 ARCH=arm64 CROSS_COMPILE=${CROSS_COMPILE} mrproper
+    echo "Checked out the kernel. Cleaning it"
+    # TODO: Add your kernel build steps here
+    make -j4 ARCH=arm64 CROSS_COMPILE=${CROSS_COMPILE} mrproper
 
-#     echo  "Configuring the kernel"
-#     make -j4 ARCH=arm64 CROSS_COMPILE=${CROSS_COMPILE} defconfig
+    echo  "Configuring the kernel"
+    make -j4 ARCH=arm64 CROSS_COMPILE=${CROSS_COMPILE} defconfig
 
-#     echo  "Building the kernel Image"
-#     make -j4 ARCH=arm64 CROSS_COMPILE=${CROSS_COMPILE} all
+    echo  "Building the kernel Image"
+    make -j4 ARCH=arm64 CROSS_COMPILE=${CROSS_COMPILE} all
 
-#     echo "Compiling the kernel modules"
-#     make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} modules
+    echo "Compiling the kernel modules"
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} modules
 
-#     echo "Compiling the device tree"
-#     make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} dtbs
+    echo "Compiling the device tree"
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} dtbs
 
-# fi
+fi
 
 echo "Adding the Image in outdir"
 
@@ -65,18 +65,18 @@ cp -f ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image  ${OUTDIR}/
 
 echo "Creating the staging directory for the root filesystem"
 cd "$OUTDIR"
-# if [ -d "${OUTDIR}/rootfs" ]
-# then
-# 	echo "Deleting rootfs directory at ${OUTDIR}/rootfs and starting over"
-#     sudo rm  -rf ${OUTDIR}/rootfs
-# fi
+if [ -d "${OUTDIR}/rootfs" ]
+then
+	echo "Deleting rootfs directory at ${OUTDIR}/rootfs and starting over"
+    sudo rm  -rf ${OUTDIR}/rootfs
+fi
 
 # # TODO: Create necessary base directories
-# mkdir -p ${OUTDIR}/rootfs
-# cd ${OUTDIR}/rootfs
-# mkdir -p  bin dev etc home lib lib64 proc sbin sys tmp usr var
-# mkdir -p  usr/bin  usr/lib/  usr/sbin
-# mkdir -p  var/log
+mkdir -p ${OUTDIR}/rootfs
+cd ${OUTDIR}/rootfs
+mkdir -p  bin dev etc home lib lib64 proc sbin sys tmp usr var
+mkdir -p  usr/bin  usr/lib/  usr/sbin
+mkdir -p  var/log
 
 
 cd "$OUTDIR"
