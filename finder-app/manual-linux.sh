@@ -105,17 +105,17 @@ ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpre
 ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
 
 # TODO: Add library dependencies to rootfs
-cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6  ${OUTDIR}/rootfs/usr/lib/ 
-cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2  ${OUTDIR}/rootfs/usr/lib/
-cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6  ${OUTDIR}/rootfs/usr/lib/
-cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1  ${OUTDIR}/rootfs/usr/lib/
+cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6  ${OUTDIR}/rootfs/lib64/ 
+cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2  ${OUTDIR}/rootfs/lib64/
+cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6  ${OUTDIR}/rootfs/lib64/
+cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1  ${OUTDIR}/rootfs/lib64/
 
 
 # TODO: Make device nodes
-cd ${OUTDIR}/rootfs
-#mknod -m 666 dev/null c 1 5
-#mknod -m 666 dev/console c 1 5
-
+#cd ${OUTDIR}/rootfs
+sudo mknod -m 666 ${OUTDIR}/rootfs/dev/null c 1 3
+sudo mknod -m 600 ${OUTDIR}/rootfs/dev/console c 5 1
+sudo mknod -m 666 ${OUTDIR}/rootfs/dev/tty c 5 0
 
 # TODO: Clean and build the writer utility
 cd $HOME
@@ -125,17 +125,19 @@ make all
 
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
-cp -f finder-app/writer  ${OUTDIR}/rootfs/
-cp -f finder-app/finder.sh  ${OUTDIR}/rootfs/
-cp -f finder-app/finder-test.sh ${OUTDIR}/rootfs/
-cp -f conf/username.txt  ${OUTDIR}/rootfs/
-cp -f conf/assignment.txt ${OUTDIR}/rootfs/
-cp -f finder-app/autorun-qemu.sh  ${OUTDIR}/rootfs/
+cp -f finder-app/writer  ${OUTDIR}/rootfs/home/
+cp -f finder-app/finder.sh  ${OUTDIR}/rootfs/home/
+cp -f finder-app/finder-test.sh ${OUTDIR}/rootfs/home/
+cp -f finder-app/autorun-qemu.sh  ${OUTDIR}/rootfs/home/
+mkdir -p ${OUTDIR}/rootfs/conf
+cp -f conf/username.txt  ${OUTDIR}/rootfs/conf/
+cp -f conf/assignment.txt ${OUTDIR}/rootfs/conf/
+
 
 
 cd ${OUTDIR}
 # TODO: Chown the root directory
-chown root:root ${OUTDIR}/rootfs
+sudo chown root:root -R ${OUTDIR}/rootfs
 
 # TODO: Create initramfs.cpio.gz
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
