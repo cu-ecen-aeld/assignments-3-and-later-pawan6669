@@ -126,7 +126,8 @@ sudo mknod -m 600 ${OUTDIR}/rootfs/dev/console c 5 1
 sudo mknod -m 666 ${OUTDIR}/rootfs/dev/tty c 5 0
 
 # TODO: Clean and build the writer utility
-cd $HOME
+cd ${FINDER_APP_DIR}/../
+echo "In  $(pwd) directory"
 make CROSS_COMPILE=${CROSS_COMPILE} clean
 make CROSS_COMPILE=${CROSS_COMPILE} all
 
