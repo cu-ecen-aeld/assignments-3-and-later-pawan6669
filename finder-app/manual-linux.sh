@@ -141,7 +141,6 @@ cp -f conf/username.txt  ${OUTDIR}/rootfs/home/conf/
 cp -f conf/assignment.txt ${OUTDIR}/rootfs/home/conf/
 
 
-
 cd ${OUTDIR}/rootfs
 # TODO: Chown the root directory
 sudo chown -R root:root  *
