@@ -13,7 +13,9 @@ BUSYBOX_VERSION=1_33_1
 FINDER_APP_DIR=$(realpath $(dirname $0))
 ARCH=arm64
 CROSS_COMPILE=aarch64-none-linux-gnu-
+
 PATH=/home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/bin:${PATH}
+LIBC_PATH=$(aarch64-none-linux-gnu-gcc -print-sysroot)
 
 if [ $# -lt 1 ]
 then
@@ -112,10 +114,10 @@ ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpre
 ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
 
 # TODO: Add library dependencies to rootfs
-cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6  ${OUTDIR}/rootfs/lib64/ 
-cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2  ${OUTDIR}/rootfs/lib64/
-cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6  ${OUTDIR}/rootfs/lib64/
-cp -f /home/pawan/toolchains/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1  ${OUTDIR}/rootfs/lib/
+cp -f ${LIBC_PATH}/libm.so.6  ${OUTDIR}/rootfs/lib64/
+cp -f ${LIBC_PATH}/lib64/libresolv.so.2  ${OUTDIR}/rootfs/lib64/
+cp -f ${LIBBC_PATH}/lib64/libc.so.6  ${OUTDIR}/rootfs/lib64/
+cp -f ${LIBC_PATH}/lib/ld-linux-aarch64.so.1  ${OUTDIR}/rootfBs/lib/
 
 
 # TODO: Make device nodes
